@@ -1,0 +1,7 @@
+#Windows Defender - Realtime Protection Disabled
+
+Event
+| where TimeGenerated ago > (1d)
+| where EventLog == @"Microsoft-Windows-Windows Defender/Operational"
+| where EventID == '5001'
+| sort by TimeGenerated desc 
