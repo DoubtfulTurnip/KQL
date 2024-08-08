@@ -1,7 +1,6 @@
 
 
 #Check for emails with HTML attachments
-
 --Requires tables EmailAttachmentInfo, EmailURLInfo, and EmailEvents
 
 let HTMLfile = (EmailAttachmentInfo
@@ -18,3 +17,16 @@ EmailEvents
 | join kind = inner HTMLurl on NetworkMessageId
 | join kind = leftouter Emailurl on NetworkMessageId
 | project Timestamp, ReportId, NetworkMessageId, SenderFromAddress, RecipientEmailAddress, FileName, FileType, ThreatTypes, ThreatNames, HTMLfile_URL_list, Email_URL_list
+
+
+#Check for phishing emails where user has been able to click the URL
+--Requires tables URLClickEvents and EmailEvents
+
+let UserClickedLink = (UrlClickEvents 
+| where Workload == "Email"
+| where ActionType == "ClickAllowed" or IsClickedThrough != "0");
+EmailEvents
+| where EmailDirection == "Inbound"
+| where ThreatTypes has_any ("Phish", "Malware")
+| join kind = inner UserClickedLink on NetworkMessageId
+| project Timestamp, ReportId, NetworkMessageId, SenderFromAddress, RecipientEmailAddress, ActionType, IsClickedThrough, Url 
