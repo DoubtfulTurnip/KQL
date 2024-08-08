@@ -32,3 +32,41 @@ EmailEvents
 | where ThreatTypes has_any ("Phish", "Malware")
 | join kind = inner UserClickedLink on NetworkMessageId
 | project Timestamp, ReportId, NetworkMessageId, SenderFromAddress, RecipientEmailAddress, ActionType, IsClickedThrough, Url 
+
+#This query will be able to identify not only users who received suspicious emails and clicked on URLs from those emails but also the associated devices
+--Requires device to be onboarded with Defender for Endpoint
+--Requires tables EmailEvents, URLClickEvents, and DeviceEvents
+
+let ClickedURL = EmailEvents
+| where EmailDirection == "Inbound"
+| where ThreatTypes has_any ("Phish", "Malware")
+| join (UrlClickEvents 
+| where Workload == "Email"
+| where ActionType == "ClickAllowed" or IsClickedThrough != "0") on NetworkMessageId
+| project Timestamp, AccountUpn, Url, UrlChain, UrlCount, DeliveryAction;
+DeviceEvents
+| where ActionType == "BrowserLaunchedToOpenUrl"
+| where InitiatingProcessFileName =~ "outlook.exe"
+| join kind = inner ClickedURL on $left.RemoteUrl == $right.Url
+| project Timestamp, DeviceId, DeviceName, AccountUpn, Url, UrlChain, UrlCount
+
+
+#Filter Exchange Online action types that could be used for exfiltration and BEC
+--Requires table CloudAppEvents
+
+CloudAppEvents
+| where Timestamp > ago(30d)
+| extend parsed = parse_json(RawEventData)
+| where Application == "Microsoft Exchange Online"
+and  ActionType in ("Add-MailboxPermission", "New-ManagementRoleAssignment", "Add-MailboxFolderPermission", "New-InboxRule", "Set-InboxRule", "Set-Mailbox", "New-TransportRule", "Set-TransportRule")
+and not(parsed.UserId has_any ('NT AUTHORITY\\SYSTEM (Microsoft.Exchange.ServiceHost)', 'NT AUTHORITY\\SYSTEM (w3wp)', 'devilfish-applicationaccount'))
+| extend parsed = parse_json(RawEventData)
+| extend UPN = tostring(parsed.UserId)
+| where UPN == "ENTEREMAILACCOUNTHERE"
+| extend Parameters = parsed.Parameters
+| mv-expand Parameters
+| extend Name = tostring(Parameters.Name)
+| extend Value = tostring(Parameters.Value)
+| extend packed = pack(Name, Value)
+| summarize PackedInfo = make_bag(packed), ActionType=any(ActionType) by ReportId, UPN
+| evaluate bag_unpack(PackedInfo)
