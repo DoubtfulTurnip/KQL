@@ -1,0 +1,63 @@
+Query
+
+# CVE-2024-37085 Suspicious Creation Of ESX Admins Group through SecurityEvent
+
+### Description
+
+The following query will help detect any creation or modification to a windows domain group with the name "ESX Admins" which would potentially indicate exploitation attempt of CVE-2024-37085.
+
+### References
+- https://www.microsoft.com/en-us/security/blog/2024/07/29/ransomware-operators-exploit-esxi-hypervisor-vulnerability-for-mass-encryption/
+- https://github.com/SigmaHQ/sigma/blob/master/rules-emerging-threats/2024/Exploits/CVE-2024-37085/win_security_exploit_cve_2024_37085_esxi_admins_group.yml
+  
+### Microsoft Sentinel
+```
+SecurityEvent
+| where tostring(EventID) has_any (dynamic(["4727", "4728", "4737"]))
+| where TargetUserName contains @"esx admins"
+| project TimeGenerated, EventID, SubjectDomainName, SubjectUserName, TargetDomainName, TargetUserName
+```
+
+### MITRE ATT&CK Mapping
+- Tactic: Persistence
+- Technique ID: T1136.002
+- [Create Account: Domain Account](https://attack.mitre.org/techniques/T1136/002/)
+
+### Source
+
+### Versioning
+| Version       | Date          | Comments                          |
+| ------------- |---------------| ----------------------------------|
+| 1.0           | 30/07/2024    | Initial publish                   |
+
+Explanation
+Summary of the Query
+
+This query is designed to detect any suspicious creation or modification of a Windows domain group named "ESX Admins." Such activity could indicate an attempt to exploit the vulnerability CVE-2024-37085.
+How the Query Works
+
+    Source of Data: The query looks at SecurityEvent logs.
+    Event Filtering: It filters events with specific Event IDs (4727, 4728, 4737), which are associated with group creation and modification activities.
+    Group Name Check: It specifically checks if the TargetUserName (the name of the group being created or modified) contains "esx admins".
+    Data Projection: It then selects and displays relevant information such as the time the event was generated, the Event ID, and details about the user and domain involved.
+
+Output Fields
+
+    TimeGenerated: When the event occurred.
+    EventID: The ID of the event.
+    SubjectDomainName: The domain of the user who performed the action.
+    SubjectUserName: The username of the person who performed the action.
+    TargetDomainName: The domain of the group being created or modified.
+    TargetUserName: The name of the group being created or modified.
+
+Purpose
+
+The query helps security teams identify potential exploitation attempts of the CVE-2024-37085 vulnerability by monitoring for the creation or modification of a specific domain group, "ESX Admins," which could be a target for attackers.
+Additional Information
+
+    References: Links to detailed articles and resources about the vulnerability and its exploitation.
+    MITRE ATT&CK Mapping: The activity is mapped to the MITRE ATT&CK framework under the tactic of Persistence and the technique of creating domain accounts (Technique ID: T1136.002).
+
+Versioning
+
+    Version 1.0: Initial version published on 30/07/2024.
