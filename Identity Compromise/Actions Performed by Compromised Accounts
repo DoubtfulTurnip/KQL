@@ -1,0 +1,26 @@
+Query
+
+//Highlight actions performed remotely by a compromised account. 
+
+DeviceProcessEvents 
+| where Timestamp >= ago(7d) 
+| where InitiatingProcessAccountSid == "SID" // Insert the compromised account SID here 
+| where IsInitiatingProcessRemoteSession == "True" 
+| project InitiatingProcessFileName, InitiatingProcessAccountSid, InitiatingProcessCommandLine, FileName, ProcessCommandLine 
+
+Explanation
+
+This query is designed to identify and highlight actions performed remotely by a compromised account on devices. Here's a simple breakdown of what it does:
+
+    Data Source: It looks at DeviceProcessEvents, which contains information about processes on devices.
+    Time Frame: It filters the data to include only events from the last 7 days.
+    Compromised Account: It further filters the data to include only events initiated by a specific compromised account, identified by its Security Identifier (SID). You need to replace "SID" with the actual SID of the compromised account.
+    Remote Sessions: It checks if the process was initiated from a remote session.
+    Output: It selects and displays specific details about these processes, including:
+        InitiatingProcessFileName: The name of the file that started the process.
+        InitiatingProcessAccountSid: The SID of the account that started the process.
+        InitiatingProcessCommandLine: The command line used to start the initiating process.
+        FileName: The name of the file associated with the process.
+        ProcessCommandLine: The command line used to start the process.
+
+In summary, this query helps you find and review actions taken remotely by a compromised account within the last week.
