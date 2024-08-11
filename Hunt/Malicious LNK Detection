@@ -1,0 +1,24 @@
+Query
+
+//Detecting LNK stomping🦶
+// https://www.linkedin.com/posts/0x534c_windows-smart-app-control-smartscreen-bypass-activity-7226483357625282560-2kOU/
+
+//A bug in the handling of LNK files, can help threat actors bypass Smart App Control security controls designed to block untrusted applications. The below KQL should detect the behavioral signal of LNK stomping.
+
+DeviceFileEvents
+| where ActionType == "FileModified"
+| where FileName endswith ".lnk"
+| where InitiatingProcessFileName has "explorer.exe"
+
+// #MDE #DefenderXDR #BypassSmartAppControl #MotW
+
+Explanation
+
+This KQL query is designed to detect a specific type of suspicious activity known as "LNK stomping," which can be used by threat actors to bypass Smart App Control security measures. Here's a simple summary of what the query does:
+
+    Source Table: It looks at events related to file activities (DeviceFileEvents).
+    Filter by Action: It filters these events to find instances where a file was modified (ActionType == "FileModified").
+    Filter by File Type: It further narrows down the results to only include files with the .lnk extension (shortcut files).
+    Filter by Process: Finally, it checks if the process that initiated the modification is explorer.exe.
+
+In essence, this query identifies when a .lnk file is modified by explorer.exe, which could indicate an attempt to exploit a bug for bypassing security controls.
