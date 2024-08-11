@@ -1,0 +1,11 @@
+//Display Oauth apps and permissions and whether admin consent is true
+
+AuditLogs
+| where OperationName contains "Consent to application"
+| extend Consent = tostring(parse_json(tostring(parse_json(tostring(TargetResources[0].modifiedProperties))[4].newValue)))
+| parse Consent with * "Scope:" PermissionsConsentedto ']' *
+| extend AdminConsent = tostring(parse_json(tostring(parse_json(tostring(TargetResources[0].modifiedProperties))[0].newValue)))
+| extend AppDisplayName = tostring(TargetResources[0].displayName)
+| extend AppType = tostring(TargetResources[0].type)
+| extend AppId = tostring(TargetResources[0].id)
+| project TimeGenerated, AdminConsent, AppDisplayName, AppType, AppId, PermissionsConsentedto
