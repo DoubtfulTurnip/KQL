@@ -1,0 +1,25 @@
+Query
+
+//Hunt for Defender tampering attempts
+
+DeviceRegistryEvents 
+| where Timestamp >= ago(7d) 
+| where RegistryKey == "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows Defender" 
+| where RegistryValueName == "DisableAntiSpyware" 
+| where RegistryValueType == "Dword" 
+| where RegistryValueData == 1 
+| where IsInitiatingProcessRemoteSession == true 
+
+Explanation
+
+This query is designed to detect attempts to tamper with Microsoft Defender settings. Here's a simple breakdown:
+
+    Data Source: It looks at registry events on devices.
+    Time Frame: It checks events from the last 7 days.
+    Registry Key: It focuses on changes to the specific registry key related to Windows Defender policies.
+    Registry Value: It looks for changes to the "DisableAntiSpyware" setting.
+    Value Type: It ensures the value type is a Dword (a specific type of data).
+    Value Data: It checks if the value has been set to 1, which means anti-spyware protection is disabled.
+    Remote Session: It filters for events where the change was made during a remote session.
+
+In summary, this query hunts for instances where someone has remotely disabled anti-spyware protection in Microsoft Defender within the past week.
