@@ -1,0 +1,24 @@
+Query
+
+// Detect threat actor abuse CloudFlare tunnels to deliver RATS
+// https://www.linkedin.com/posts/activity-7225744862875152384-whO8/
+
+UrlClickEvents
+| where Timestamp > ago(30d)
+| extend domain = tostring(parse_url(Url).Host)
+| where domain endswith ".trycloudflare.com"
+| join EmailEvents on NetworkMessageId
+| project Timestamp, Url, RecipientEmailAddress, SenderMailFromAddress, SenderFromAddress, Subject, AttachmentCount, UrlCount
+
+Explanation
+
+This KQL (Kusto Query Language) query is designed to detect potential threat actors using CloudFlare tunnels to deliver Remote Access Trojans (RATs) via email. Here's a simple breakdown of what the query does:
+
+    Source Table: It starts by looking at the UrlClickEvents table.
+    Time Filter: It filters the events to only include those that occurred in the last 30 days (Timestamp > ago(30d)).
+    Extract Domain: It extracts the domain part from the URL in each event (extend domain = tostring(parse_url(Url).Host)).
+    Domain Filter: It further filters the events to only include those where the domain ends with ".trycloudflare.com".
+    Join with Email Events: It joins these filtered URL click events with the EmailEvents table based on the NetworkMessageId field.
+    Select Columns: Finally, it selects and displays specific columns: Timestamp, Url, RecipientEmailAddress, SenderMailFromAddress, SenderFromAddress, Subject, AttachmentCount, and UrlCount.
+
+In summary, this query identifies and displays email events where recipients clicked on URLs that use CloudFlare tunnels, which could be a sign of malicious activity.
