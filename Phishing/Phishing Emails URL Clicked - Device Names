@@ -1,0 +1,16 @@
+#This query will be able to identify not only users who received suspicious emails and clicked on URLs from those emails but also the associated devices
+--Requires device to be onboarded with Defender for Endpoint
+--Requires tables EmailEvents, URLClickEvents, and DeviceEvents
+
+let ClickedURL = EmailEvents
+| where EmailDirection == "Inbound"
+| where ThreatTypes has_any ("Phish", "Malware")
+| join (UrlClickEvents 
+| where Workload == "Email"
+| where ActionType == "ClickAllowed" or IsClickedThrough != "0") on NetworkMessageId
+| project Timestamp, AccountUpn, Url, UrlChain, UrlCount, DeliveryAction;
+DeviceEvents
+| where ActionType == "BrowserLaunchedToOpenUrl"
+| where InitiatingProcessFileName =~ "outlook.exe"
+| join kind = inner ClickedURL on $left.RemoteUrl == $right.Url
+| project Timestamp, DeviceId, DeviceName, AccountUpn, Url, UrlChain, UrlCount
