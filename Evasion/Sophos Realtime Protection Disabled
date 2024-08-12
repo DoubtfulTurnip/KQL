@@ -1,0 +1,12 @@
+Query
+
+CommonSecurityLog
+| where DeviceVendor == "sophos" and LogSeverity == 8 and Activity !in ("Real time protection disabled") 
+| sort by TimeGenerated
+| project TimeGenerated, Activity, DestinationHostName, SourceUserName, LogSeverity
+| extend HostCustomEntity = DestinationHostName
+| extend AccountCustomEntity = SourceUserName
+
+Explanation
+
+This query is searching through a log called CommonSecurityLog. It is filtering for logs where the device vendor is "sophos", the log severity is 8, and the activity is not "Real time protection disabled". The results are then sorted by the time they were generated. The query only selects specific columns to display: TimeGenerated, Activity, DestinationHostName, SourceUserName, and LogSeverity. Additionally, it creates two new columns called HostCustomEntity and AccountCustomEntity, which are derived from the DestinationHostName and SourceUserName columns respectively.
