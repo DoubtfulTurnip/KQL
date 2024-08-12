@@ -26,12 +26,6 @@ DeviceEvents
 | where ActionType == 'SecurityLogCleared'
 | project Timestamp, DeviceName, ActionType
 ```
-## Sentinel
-```
-DeviceEvents
-| where ActionType == 'SecurityLogCleared'
-| project Timestamp, DeviceName, ActionType
-```
 
 Explanation
 
