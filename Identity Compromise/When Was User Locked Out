@@ -1,0 +1,10 @@
+Query
+
+SecurityEvent
+| where EventID == 4740 or EventID == 644 //A user account was locked out
+| extend LowerAccount=tolower(Account)
+| search "username"
+
+Explanation
+
+This query searches for security events where a user account was locked out. It specifically looks for events with EventID 4740 or 644. It also converts the account name to lowercase and searches for events that contain the word "username".
