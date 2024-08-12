@@ -1,0 +1,28 @@
+Query
+
+Tags:
+
+Query:
+
+DeviceProcessEvents
+|  where ProcessVersionInfoFileDescription == @"Service Control Manager Configuration Tool" and InitiatingProcessVersionInfoCompanyName != "Cisco Systems, Inc."
+and ProcessCommandLine contains  "path" 
+| where InitiatingProcessVersionInfoProductName != @"Microsoft® Azure® AD Connect"
+
+
+References:
+
+False positives:
+This rule might generate false positives exclude the most noisy onces
+
+Explanation
+
+This query is designed to filter and identify specific events related to a process called "Service Control Manager Configuration Tool" from device process events. Here's a simple breakdown:
+
+    Source Table: The query looks at the DeviceProcessEvents table.
+    Process Description: It filters events where the process description is "Service Control Manager Configuration Tool".
+    Company Name Exclusion: It excludes events where the initiating process is from "Cisco Systems, Inc."
+    Command Line Filter: It only includes events where the command line contains the word "path".
+    Product Name Exclusion: It excludes events where the initiating process product name is "Microsoft® Azure® AD Connect".
+
+Note: The query might generate false positives, so it suggests excluding the most frequent or noisy ones to reduce irrelevant results.
