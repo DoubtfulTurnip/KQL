@@ -1,0 +1,34 @@
+Query
+
+# Screensaver file invoking suspicious processes
+
+### Description
+
+This hunting query is based on a RedLine stealer malware delivered through a .scr file which invoked a suspicious processes including command prompt, powershell or any other .exe file.
+
+### Microsoft 365 Defender
+```
+DeviceProcessEvents
+| where FileName has_any (@"cmd.exe", @"powershell.exe", @".exe")
+| where InitiatingProcessFileName contains ".scr"
+| summarize arg_max(Timestamp, *) by DeviceName
+| project Timestamp, DeviceName
+```
+
+### MITRE ATT&CK Mapping
+- Tactic: Persistence
+- Technique ID: T1546.002
+- [Event Triggered Execution: Screensaver](https://attack.mitre.org/techniques/T1546/002/)
+
+### Source
+- MDE
+
+### Versioning
+| Version       | Date          | Comments                      |
+| ------------- |---------------| ------------------------------|
+| 1.0           | 08/11/2022    | Initial publish               |
+| 1.1           | 23/05/2023    | Modified template, ATT&CK map |
+
+Explanation
+
+This query is designed to detect a specific type of malware called RedLine stealer that is delivered through a screensaver (.scr) file. The query looks for instances where the screensaver file invokes suspicious processes such as command prompt, PowerShell, or any other .exe file. It then summarizes the results by the device name and projects the timestamp and device name. This query helps identify potential malicious activity related to the execution of screensaver files. It is mapped to the MITRE ATT&CK technique T1546.002 (Event Triggered Execution: Screensaver) under the Persistence tactic. The query is sourced from Microsoft 365 Defender (MDE) and has gone through versioning updates.
