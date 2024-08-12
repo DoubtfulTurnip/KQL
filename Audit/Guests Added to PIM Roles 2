@@ -1,0 +1,33 @@
+Query
+
+//New guest accounts that have been promoted to certain AAD roles
+
+
+let Roles = pack_array("Company Administrator");
+let newGuestAccounts = (
+CloudAppEvents
+| where Timestamp > ago(7d)
+| where ActionType == "Add user."
+| where RawEventData.ResultStatus == "Success"
+| where RawEventData has "guest" and RawEventData.ObjectId has "#EXT#"
+| mv-expand Property = RawEventData.ModifiedProperties
+| where Property.Name == "AccountEnabled" and Property.NewValue has "true"
+| project CreationTimestamp = Timestamp, AccountObjectId, AccountDisplayName, newGuestAccount = RawEventData.ObjectId,newGuestAccountObjectId = tostring(RawEventData.Target[1].ID), UserAgent);
+let promotedAccounts = (
+CloudAppEvents
+| where Timestamp > ago(7d)
+| where isnotempty(AccountObjectId)
+| where ActionType == "Add member to role."
+| where RawEventData.ResultStatus == "Success"
+| where RawEventData has_any(Roles) 
+| where RawEventData.Actor has "User"
+| project PromoteTimestamp = Timestamp, PromotedUserAccountObjectId = tostring(RawEventData.Target[1].ID));
+//join the two tables
+newGuestAccounts
+| join promotedAccounts on $left.newGuestAccountObjectId == $right.PromotedUserAccountObjectId
+| where PromoteTimestamp  > CreationTimestamp
+| project CreationTimestamp, PromoteTimestamp, PromotedUserAccountObjectId, newGuestAccount, newGuestAccountObjectId
+
+Explanation
+
+This query is looking for new guest accounts that have been promoted to certain Azure Active Directory (AAD) roles within the past 7 days. It first identifies new guest accounts that have been added successfully and have the "AccountEnabled" property set to true. Then, it identifies accounts that have been added to specific roles successfully. Finally, it joins the two tables based on the account object IDs and filters for promotions that occurred after the creation of the guest account. The resulting table includes the creation timestamp, promotion timestamp, account object ID, and guest account details.
