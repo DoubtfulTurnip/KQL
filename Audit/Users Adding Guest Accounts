@@ -1,0 +1,17 @@
+Query
+
+//Users who added guest accounts to the tenants
+
+
+CloudAppEvents
+| where Timestamp > ago(7d)
+| where ActionType == "Add user."
+| where RawEventData.ResultStatus == "Success"
+| where RawEventData has "guest" and RawEventData.ObjectId has "#EXT#"
+| mv-expand Property = RawEventData.ModifiedProperties
+| where Property.Name == "AccountEnabled" and Property.NewValue has "true"
+| project Timestamp, AccountObjectId, AccountDisplayName, newGuestAccount = RawEventData.ObjectId, UserAgent
+
+Explanation
+
+This query retrieves information about users who added guest accounts to the tenants in the past 7 days. It filters the CloudAppEvents data based on the action type being "Add user" and the result status being "Success". It also checks if the RawEventData contains the word "guest" and if the RawEventData.ObjectId contains "#EXT#". The query then expands the RawEventData.ModifiedProperties and filters for the Property.Name being "AccountEnabled" and the Property.NewValue being "true". Finally, it projects the Timestamp, AccountObjectId, AccountDisplayName, RawEventData.ObjectId (renamed as newGuestAccount), and UserAgent.
