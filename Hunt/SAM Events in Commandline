@@ -1,0 +1,26 @@
+Query
+
+// This file contains 2 queries
+
+// Potential SeriousSAM Exploitation via direct access
+DeviceProcessEvents
+| where (ProcessCommandLine contains "\\Windows\\System32\\config\\SAM"
+     or ProcessCommandLine contains "\\Windows\\System32\\config\\SECURITY"
+     or ProcessCommandLine contains "\\Windows\\System32\\config\\SYSTEM")
+     and ProcessCommandLine !contains "systemprofile"
+| where FileName != "icacls.exe"
+
+// Potential SeriousSAM Exploitation via shadow copies
+DeviceProcessEvents
+| where ProcessCommandLine contains "\\\\?\\GLOBALROOT\\Device\\HarddiskVolumeShadowCopy"
+| where ProcessCommandLine contains "\\Windows\\System32\\config\\SAM"
+     or ProcessCommandLine contains "\\Windows\\System32\\config\\SECURITY"
+     or ProcessCommandLine contains "\\Windows\\System32\\config\\SYSTEM"
+
+Explanation
+
+The query is looking for potential exploitation of the SeriousSAM vulnerability through two different methods.
+
+The first query checks for any processes that have direct access to certain files in the Windows system directory, specifically the SAM, SECURITY, and SYSTEM files. It excludes any processes that contain the term "systemprofile" in their command line and also excludes any processes with the file name "icacls.exe".
+
+The second query checks for any processes that are accessing shadow copies of the hard disk volume and also have access to the same system files mentioned in the first query.
