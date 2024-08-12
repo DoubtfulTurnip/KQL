@@ -1,0 +1,11 @@
+Query
+
+DeviceFileEvents
+| where ActionType in ("FileCreated", "FileModified")
+| where FolderPath startswith "D:\\"
+| where Timestamp > ago(7d)
+| project Timestamp, DeviceId, DeviceName, FileName, FolderPath
+
+Explanation
+
+This query retrieves file events from a device where the action type is either file creation or modification. It filters the results to only include files located in the "D:" folder. Additionally, it only includes events that occurred within the last 7 days. The final result includes the timestamp, device ID, device name, file name, and folder path for each event.
