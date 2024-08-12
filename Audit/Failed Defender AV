@@ -1,0 +1,18 @@
+Query
+
+//Detect if Defender AV is not successful in remediating the detection
+
+DeviceEvents
+| where ActionType == "AntivirusDetection"
+| extend ParsedFields=parse_json(AdditionalFields)
+| project ThreatName=tostring(ParsedFields.ThreatName),
+         WasRemediated=tobool(ParsedFields.WasRemediated),
+         WasExecutingWhileDetected=tobool(ParsedFields.WasExecutingWhileDetected),
+         FileName, SHA1, InitiatingProcessFileName, InitiatingProcessCommandLine,
+         DeviceName
+// Change "!=" to "==" see all remediated actions
+| where WasRemediated != "true"
+
+Explanation
+
+This query is looking for instances where Defender AV was not successful in remediating a detection. It filters the DeviceEvents table to only include entries with ActionType "AntivirusDetection". It then parses the AdditionalFields column as JSON and selects specific fields to display. Finally, it filters the results to only show entries where WasRemediated is not equal to "true".
