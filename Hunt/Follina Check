@@ -1,0 +1,9 @@
+Query
+
+DeviceProcessEvents
+| where ProcessCommandLine contains "msdt.exe"
+| where InitiatingProcessFileName has_any (@"WINWORD.EXE", @"EXCEL.EXE", @"OUTLOOK.EXE")
+
+Explanation
+
+This query is looking for events related to a specific process called "msdt.exe". It then filters those events to only include cases where the initiating process is either "WINWORD.EXE", "EXCEL.EXE", or "OUTLOOK.EXE".
