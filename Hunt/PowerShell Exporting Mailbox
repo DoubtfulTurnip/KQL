@@ -1,0 +1,11 @@
+Query
+
+Tags:
+Query:
+DeviceProcessEvents
+| where InitiatingProcessFileName has_any ("powershell.exe", "pwsh.exe", "powershell_ise.exe") and ProcessCommandLine has_any ("*MailboxExportRequest*", "*-Mailbox*-ContentFilter*")
+References:
+
+Explanation
+
+This query is searching through device process events to find instances where certain PowerShell executables (like powershell.exe, pwsh.exe, or powershell_ise.exe) have been used. Additionally, it filters these instances to only include those where the command line contains specific terms related to mailbox export or content filtering (like *MailboxExportRequest* or *-Mailbox*-ContentFilter*).
