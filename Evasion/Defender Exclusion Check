@@ -1,0 +1,22 @@
+Query
+
+Tags:
+Query:
+DeviceRegistryEvents
+|  where RegistryKey contains @"windows defender\exclusions" and InitiatingProcessCommandLine != @"svchost.exe -k GPSvcGroup" and InitiatingProcessCommandLine != @"svchost.exe -k netsvcs -p -s gpsvc" and InitiatingProcessCommandLine != @"msiexec.exe /V" and InitiatingProcessAccountName != @"system"
+| where InitiatingProcessParentId != 0
+References
+
+Explanation
+
+This KQL (Kusto Query Language) query is designed to search through DeviceRegistryEvents for specific registry key changes related to Windows Defender exclusions. Here's a simplified breakdown of what the query does:
+
+    Search for Registry Key Changes: It looks for events where the registry key contains the phrase "windows defender\exclusions".
+    Exclude Specific Processes: It filters out events initiated by certain processes:
+        svchost.exe -k GPSvcGroup
+        svchost.exe -k netsvcs -p -s gpsvc
+        msiexec.exe /V
+    Exclude System Account: It excludes events where the initiating process account name is "system".
+    Exclude Root Processes: It filters out events where the initiating process parent ID is 0, which typically indicates a root or system-level process.
+
+In summary, this query identifies changes to Windows Defender exclusions in the registry that are not made by specific known processes or the system account, and ensures that the changes are initiated by non-root processes.
