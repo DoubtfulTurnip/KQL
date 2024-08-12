@@ -1,0 +1,18 @@
+Query
+
+//Detect when an Azure AD guest account is assigned to an Azure AD PIM role
+
+//Data connector required for this query - Azure Active Directory - Audit Logs
+
+AuditLogs
+| where TimeGenerated > ago (1d)
+| where OperationName in ("Add eligible member to role in PIM completed (permanent)", "Add eligible member to role in PIM completed (timebound)", "Add member to role in PIM completed (permanent)", "Add member to role in PIM completed (timebound)")
+| extend ['Azure AD Role Name'] = tostring(TargetResources[0].displayName)
+| extend Target = tostring(TargetResources[2].userPrincipalName)
+| extend Actor = tostring(parse_json(tostring(InitiatedBy.user)).userPrincipalName)
+| where Target contains "#ext#"
+| project TimeGenerated, OperationName, Actor, Target, ['Azure AD Role Name']
+
+Explanation
+
+This query detects when an Azure AD guest account is assigned to an Azure AD PIM role. It uses the Azure Active Directory - Audit Logs data connector. The query filters the audit logs for specific operations related to adding members to PIM roles. It then extracts the relevant information such as the time generated, operation name, actor, target, and Azure AD role name. The query also filters for targets that contain "#ext#" to identify guest accounts.
