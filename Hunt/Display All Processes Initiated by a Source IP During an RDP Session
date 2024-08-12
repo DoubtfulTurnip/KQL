@@ -1,0 +1,6 @@
+DeviceProcessEvents 
+| where Timestamp >= ago(1d) 
+| where IsInitiatingProcessRemoteSession == "True" 
+| where InitiatingProcessRemoteSessionIP == "X.X.X.X" // Insert your IP Address here 
+| project InitiatingProcessFileName, InitiatingProcessAccountSid, InitiatingProcessCommandLine, FileName, ProcessCommandLine 
+
