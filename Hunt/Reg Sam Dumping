@@ -1,0 +1,19 @@
+Query
+
+Tags:
+Query
+DeviceProcessEvents
+| where ProcessVersionInfoFileDescription == @"Registry Console Tool"
+| where ProcessCommandLine contains "save" or ProcessCommandLine contains "export"
+| where ProcessCommandLine has_any ("sam","security","system")
+References
+
+Explanation
+
+Sure! This query is looking for specific events related to a process called "Registry Console Tool" within the DeviceProcessEvents data. Here's a breakdown of what it does:
+
+    Filter by Process Name: It first filters the events to only include those where the process description is "Registry Console Tool".
+    Filter by Command Line: It then narrows down these events to those where the command line used to run the process contains either the word "save" or "export".
+    Check for Specific Terms: Finally, it further filters the results to include only those command lines that contain any of the terms "sam", "security", or "system".
+
+In simple terms, this query is looking for instances where the "Registry Console Tool" was used with command lines that involve saving or exporting, and specifically mention "sam", "security", or "system".
