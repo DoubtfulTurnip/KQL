@@ -1,0 +1,12 @@
+Query
+
+SigninLogs 
+| where AppDisplayName == "Microsoft Cloud App Security" 
+| extend UserBrowser_ = tostring(DeviceDetail.browser) 
+| extend UserOperatingSystem_ = tostring(DeviceDetail.operatingSystem) 
+| extend UserCountryOrRegion_ = tostring(LocationDetails.countryOrRegion) 
+| extend UserCity_ = tostring(LocationDetails.city)
+
+Explanation
+
+This query is filtering the SigninLogs data to only include entries where the AppDisplayName is "Microsoft Cloud App Security". It then adds new columns to the data, extracting information about the user's browser, operating system, country or region, and city.
