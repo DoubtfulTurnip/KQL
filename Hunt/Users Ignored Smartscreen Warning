@@ -1,0 +1,26 @@
+Query
+
+Tags:
+
+Query:
+DeviceEvents
+| where ActionType == "SmartScreenAppWarning" //where ActionType == 'SmartScreenUserOverride' for when users ignored the warning and proceeded to execute the file
+| extend data = parse_json(AdditionalFields)
+| extend Experience = parse_json(data).Experience
+| where FileName !in () //Exclusions by filename goes here
+| project Timestamp, DeviceName, ActionType, FileName, InitiatingProcessFileName, Experience, InitiatingProcessAccountUpn, DeviceId, ReportId
+
+References
+
+Explanation
+
+This KQL (Kusto Query Language) query is designed to filter and display specific device events related to SmartScreen warnings. Here's a simple summary:
+
+    Source Table: The query is pulling data from the DeviceEvents table.
+    Filter by ActionType: It filters the events to only include those where the ActionType is "SmartScreenAppWarning". (You can change this to "SmartScreenUserOverride" to see events where users ignored the warning and executed the file.)
+    Parse Additional Fields: It extracts and parses additional JSON data from the AdditionalFields column.
+    Extract Experience: It further extracts the Experience field from the parsed JSON data.
+    Exclude Specific Files: It allows for the exclusion of specific filenames (though currently, no filenames are excluded).
+    Select Columns: It selects and displays specific columns: Timestamp, DeviceName, ActionType, FileName, InitiatingProcessFileName, Experience, InitiatingProcessAccountUpn, DeviceId, and ReportId.
+
+In essence, this query helps you analyze SmartScreen warnings on devices by showing relevant details about each event, with the option to exclude certain filenames and to switch between warnings and user overrides.
