@@ -1,0 +1,31 @@
+Query
+
+# Identify endpoints running WSL without MDE plug-in
+
+## Description
+
+The following query will identify endpoints running Windows Subsystem for Linux (WSL) without the WSL Microsoft Defender for Endpoint plug-in.
+
+### Microsoft Sentinel & Defender XDR
+```
+let WSLDevices = DeviceProcessEvents
+| where ActionType has "ProcessCreated"
+| where ProcessVersionInfoOriginalFileName has "wsl.exe"
+| where ProcessVersionInfoFileDescription has "Windows Subsystem for Linux"
+| project DeviceName;
+WSLDevices
+    | join kind=leftanti (DeviceTvmSoftwareInventory
+    | where SoftwareName has "microsoft_defender_for_endpoint_plug-in_for_wsl"
+    | project DeviceName
+) on DeviceName
+| distinct DeviceName
+```
+
+### Versioning
+| Version       | Date          | Comments                               |
+| ------------- |---------------| ---------------------------------------|
+| 1.0           | 16/06/2024    | Initial publish                        |
+
+Explanation
+
+This query identifies devices running Windows Subsystem for Linux (WSL) without the Microsoft Defender for Endpoint plug-in. It looks for processes related to WSL and then checks if the plug-in is installed on those devices. If the plug-in is not found, the device is listed as an endpoint running WSL without the plug-in.
