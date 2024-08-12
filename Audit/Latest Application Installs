@@ -1,0 +1,17 @@
+Query
+
+Use Case: Monitoring the successful installation of applications on Windows systems over the last 7 days.
+
+
+
+Query:
+
+
+
+WindowsEvent('Application', 7d)
+
+| where Message contains 'Installation completed successfully'
+
+Explanation
+
+The query is looking for Windows events related to application installations that have been successfully completed in the last 7 days
