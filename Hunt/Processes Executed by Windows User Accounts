@@ -1,0 +1,21 @@
+Query
+
+Use Case: Identifying and analyzing unique processes executed by Windows user accounts while sorting the results by user and process name for security or auditing purposes.
+
+
+
+Query:
+
+
+
+Process
+
+| project WindowsUserAccount, ProcessName, ProcessId, CommandLine
+
+| distinct WindowsUserAccount, ProcessName, ProcessId, CommandLine
+
+| order by WindowsUserAccount, ProcessName
+
+Explanation
+
+The query is used to identify and analyze unique processes executed by Windows user accounts. It sorts the results by the user account and process name for security or auditing purposes. It selects the Windows user account, process name, process ID, and command line for each process. It then removes any duplicate entries and orders the results by the user account and process name.
