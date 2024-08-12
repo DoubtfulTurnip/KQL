@@ -1,0 +1,17 @@
+Query
+
+# Triggers when a remote SBM connection has been found
+----
+
+
+```
+DeviceNetworkEvents
+| where RemoteIPType == "Public"
+| where RemotePort == 445
+| where ActionType == "ConnectionSuccess"
+| project-reorder Timestamp, DeviceName, RemoteIP
+```
+
+
+
+
