@@ -1,0 +1,34 @@
+Query
+
+Tags:
+
+Queries:
+   DeviceImageLoadEvents
+      | where FileName contains "system.management.automation"
+      | where InitiatingProcessFileName != @"powershell.exe"
+      | where InitiatingProcessFileName != @"monitoringhost.exe"
+      | where InitiatingProcessFileName != @"mscorsvw.exe"
+      | where InitiatingProcessFileName != @"wa_3rd_party_host_32.exe"
+      | where InitiatingProcessFileName != @"lenovo.modern.imcontroller.pluginhost.companionapp.exe"
+      | where InitiatingProcessFileName != @"sdiagnhost.exe"
+      | where InitiatingProcessFolderPath has_any ("temp", "users")
+
+References:
+
+Notes:
+This will be false positives prone
+
+Explanation
+
+This query is searching through device image load events to find instances where a file named "system.management.automation" was loaded, but not by certain common processes. Specifically, it excludes events initiated by the following processes:
+
+    powershell.exe
+    monitoringhost.exe
+    mscorsvw.exe
+    wa_3rd_party_host_32.exe
+    lenovo.modern.imcontroller.pluginhost.companionapp.exe
+    sdiagnhost.exe
+
+Additionally, it only considers events where the initiating process's folder path includes either "temp" or "users".
+
+The note indicates that the results of this query are likely to include many false positives.
