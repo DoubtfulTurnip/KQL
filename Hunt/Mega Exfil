@@ -1,0 +1,18 @@
+Query
+
+DeviceNetworkEvents
+| where RemoteUrl contains "mega.io" or RemoteUrl contains "mega.co.nz"
+| where InitiatingProcessFileName !~ "chrome.exe"
+and InitiatingProcessFileName !~ "firefox.exe"
+and InitiatingProcessFileName !~ "safari.exe"
+and InitiatingProcessFileName !~ "opera.exe"
+and InitiatingProcessFileName !~ "iexplore.exe"
+and InitiatingProcessFileName !~ "microsoftedge.exe"
+and InitiatingProcessFileName !~ "microsoftedgecp.exe"
+and InitiatingProcessFileName !~ "browser_broker.exe"
+and InitiatingProcessFileName !~ "msedge.exe"
+and InitiatingProcessFileName !~ "brave.exe"
+
+Explanation
+
+This query is filtering the DeviceNetworkEvents table to only include events where the RemoteUrl contains either "mega.io" or "mega.co.nz". It then further filters the results to exclude events where the InitiatingProcessFileName contains any of the specified browser executable names.
